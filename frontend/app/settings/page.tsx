@@ -32,7 +32,7 @@ export default function SettingsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <TopNav />
-        <main className="flex-1 p-6">
+        <main id="main-content" className="flex-1 p-6">
           <div className="max-w-4xl mx-auto space-y-6">
             <div>
               <h1 className="text-page-title text-primary">Settings</h1>

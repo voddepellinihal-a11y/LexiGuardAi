@@ -56,7 +56,7 @@ export default function ComparePage() {
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <TopNav />
-        <main className="flex-1 p-6">
+        <main id="main-content" className="flex-1 p-6">
           <div className="max-w-6xl mx-auto space-y-6">
             <div>
               <h1 className="text-page-title text-primary">Compare Documents</h1>
@@ -68,8 +68,9 @@ export default function ComparePage() {
             <div className="card">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="label mb-2 block">Version A</label>
+                  <label htmlFor="compare-doc-a" className="label mb-2 block">Version A</label>
                   <select
+                    id="compare-doc-a"
                     value={docA}
                     onChange={(e) => setDocA(e.target.value)}
                     className="input-field"
@@ -83,8 +84,9 @@ export default function ComparePage() {
                   </select>
                 </div>
                 <div>
-                  <label className="label mb-2 block">Version B</label>
+                  <label htmlFor="compare-doc-b" className="label mb-2 block">Version B</label>
                   <select
+                    id="compare-doc-b"
                     value={docB}
                     onChange={(e) => setDocB(e.target.value)}
                     className="input-field"

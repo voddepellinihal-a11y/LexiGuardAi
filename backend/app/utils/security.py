@@ -26,7 +26,7 @@ PROMPT_INJECTION_PATTERNS = [
 def detect_prompt_injection(text: str) -> bool:
     text_lower = text.lower()
     for pattern in PROMPT_INJECTION_PATTERNS:
-        if pattern in text_lower:
+        if pattern.lower() in text_lower:
             return True
     return False
 
@@ -38,8 +38,9 @@ def sanitize_document_text(text: str) -> str:
 
 
 def sanitize_for_llm_context(text: str) -> str:
+    import re
+
     sanitized = text
     for pattern in PROMPT_INJECTION_PATTERNS:
-        sanitized = sanitized.replace(pattern, "[REDACTED]")
-        sanitized = sanitized.replace(pattern.upper(), "[REDACTED]")
+        sanitized = re.sub(re.escape(pattern), "[REDACTED]", sanitized, flags=re.IGNORECASE)
     return sanitized

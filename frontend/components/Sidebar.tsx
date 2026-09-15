@@ -31,13 +31,14 @@ export function Sidebar() {
         <span className="text-lg font-bold text-primary">LexiGuard AI</span>
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav aria-label="Main navigation" className="flex-1 px-3 py-4 space-y-1">
         {navigation.map((item) => {
           const isActive = pathname.startsWith(item.href) && item.href !== "/documents" || pathname === item.href;
           return (
             <Link
               key={item.name}
               href={item.href}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                 isActive
@@ -45,7 +46,7 @@ export function Sidebar() {
                   : "text-text-secondary hover:bg-surface-muted hover:text-text-primary"
               )}
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon aria-hidden="true" className="h-5 w-5" />
               {item.name}
             </Link>
           );

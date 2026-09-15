@@ -58,7 +58,7 @@ export function AIChat({ documentId, documentName }: AIChatProps) {
         Ask questions about <span className="font-medium text-text-primary">{documentName}</span>
       </p>
 
-      <div className="flex-1 overflow-y-auto space-y-4 mb-4 min-h-[300px] max-h-[500px]">
+      <div aria-live="polite" aria-label="Chat conversation" className="flex-1 overflow-y-auto space-y-4 mb-4 min-h-[300px] max-h-[500px]">
         {conversation.length === 0 && (
           <div className="text-center py-12 text-text-muted">
             <p className="text-sm">Ask a question about this document...</p>
@@ -112,7 +112,7 @@ export function AIChat({ documentId, documentName }: AIChatProps) {
                     onClick={() => copyAnswer(msg.content)}
                     className="text-xs text-text-muted hover:text-text-primary flex items-center gap-1"
                   >
-                    <Copy className="h-3 w-3" />
+                    <Copy aria-hidden="true" className="h-3 w-3" />
                     Copy
                   </button>
                 </div>
@@ -123,15 +123,19 @@ export function AIChat({ documentId, documentName }: AIChatProps) {
 
         {chatMutation.isPending && (
           <div className="flex justify-start">
-            <div className="bg-surface-muted rounded-lg p-3">
-              <Loader2 className="h-4 w-4 animate-spin text-accent" />
+            <div role="status" aria-label="Waiting for answer" className="bg-surface-muted rounded-lg p-3">
+              <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin text-accent" />
             </div>
           </div>
         )}
       </div>
 
       <form onSubmit={handleSubmit} className="flex gap-2">
+        <label htmlFor="chat-input" className="sr-only">
+          Ask a question about {documentName}
+        </label>
         <input
+          id="chat-input"
           type="text"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
@@ -142,9 +146,10 @@ export function AIChat({ documentId, documentName }: AIChatProps) {
         <Button
           type="submit"
           className="btn-primary"
+          aria-label="Send question"
           disabled={!question.trim() || chatMutation.isPending}
         >
-          <Send className="h-4 w-4" />
+          <Send aria-hidden="true" className="h-4 w-4" />
         </Button>
       </form>
     </div>

@@ -42,8 +42,9 @@ export function RoleSelector({
   return (
     <div className="space-y-4">
       <div>
-        <label className="label mb-2 block">Your Role</label>
+        <label htmlFor="role-select" className="label mb-2 block">Your Role</label>
         <select
+          id="role-select"
           value={role}
           onChange={(e) => onRoleChange(e.target.value as UserRole)}
           disabled={disabled}
@@ -58,11 +59,13 @@ export function RoleSelector({
       </div>
 
       <div>
-        <label className="label mb-2 block">Negotiation Stance</label>
-        <div className="grid grid-cols-3 gap-2">
+        <span id="stance-label" className="label mb-2 block">Negotiation Stance</span>
+        <div className="grid grid-cols-3 gap-2" role="group" aria-labelledby="stance-label">
           {STANCES.map((s) => (
             <button
               key={s}
+              type="button"
+              aria-pressed={stance === s}
               onClick={() => onStanceChange(s)}
               disabled={disabled}
               className={`p-3 rounded-md text-sm font-medium border transition-colors ${

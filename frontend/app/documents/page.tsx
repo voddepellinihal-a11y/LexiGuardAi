@@ -39,7 +39,7 @@ export default function DocumentsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <TopNav />
-        <main className="flex-1 p-6">
+        <main id="main-content" className="flex-1 p-6">
           <div className="max-w-6xl mx-auto space-y-6">
             <div>
               <h1 className="text-page-title text-primary">Documents</h1>
@@ -105,13 +105,14 @@ export default function DocumentsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
+                            aria-label={`Delete ${doc.filename}`}
                             onClick={() => {
                               if (confirm("Delete this document?")) {
                                 deleteMutation.mutate(doc.id);
                               }
                             }}
                           >
-                            <Trash2 className="h-4 w-4 text-text-muted hover:text-risk-high" />
+                            <Trash2 aria-hidden="true" className="h-4 w-4 text-text-muted hover:text-risk-high" />
                           </Button>
                         </div>
                       </div>

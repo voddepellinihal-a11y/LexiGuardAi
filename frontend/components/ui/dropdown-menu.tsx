@@ -41,7 +41,21 @@ export function DropdownMenu({ children }: DropdownMenuProps) {
 export function DropdownMenuTrigger({ children, asChild }: DropdownMenuTriggerProps) {
   const { open, setOpen } = React.useContext(DropdownMenuContext);
   return (
-    <div onClick={() => setOpen(!open)}>{children}</div>
+    <div
+      role="button"
+      tabIndex={0}
+      aria-haspopup="menu"
+      aria-expanded={open}
+      onClick={() => setOpen(!open)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setOpen(!open);
+        }
+      }}
+    >
+      {children}
+    </div>
   );
 }
 
