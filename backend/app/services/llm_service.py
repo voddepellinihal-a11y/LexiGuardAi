@@ -7,7 +7,14 @@ import structlog
 
 logger = structlog.get_logger()
 
-client = AsyncOpenAI(api_key=settings.LLM_API_KEY)
+_client: AsyncOpenAI | None = None
+
+
+def _get_client() -> AsyncOpenAI:
+    global _client
+    if _client is None:
+        _client = AsyncOpenAI(api_key=settings.LLM_API_KEY)
+    return _client
 
 SYSTEM_PROMPT = """You are a legal document analysis assistant. You provide legal information and document analysis for assistance and educational purposes.
 
@@ -52,7 +59,7 @@ async def chat_completion(
     if len(messages) > 50:
         raise ValueError("Too many messages")
     try:
-        response = await client.chat.completions.create(
+        response = await _get_client().chat.completions.create(
             model=model,
             messages=messages,  # type: ignore[arg-type]
             temperature=temperature,

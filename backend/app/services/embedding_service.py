@@ -5,14 +5,21 @@ import structlog
 
 logger = structlog.get_logger()
 
-client = AsyncOpenAI(api_key=settings.LLM_API_KEY)
+_client: AsyncOpenAI | None = None
+
+
+def _get_client() -> AsyncOpenAI:
+    global _client
+    if _client is None:
+        _client = AsyncOpenAI(api_key=settings.LLM_API_KEY)
+    return _client
 
 
 async def generate_embeddings(texts: List[str]) -> List[List[float]]:
     if not texts:
         return []
     try:
-        response = await client.embeddings.create(
+        response = await _get_client().embeddings.create(
             model=settings.EMBEDDING_MODEL,
             input=texts,
         )
