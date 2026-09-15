@@ -78,7 +78,7 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <p className="text-sm text-risk-high">{error}</p>
+              <p role="alert" className="text-sm text-risk-high">{error}</p>
             )}
 
             <Button type="submit" className="btn-primary w-full" disabled={loading}>
