@@ -7,6 +7,7 @@ import { useDocuments, useCompareDocuments } from "@/hooks/useQueries";
 import { Sidebar } from "@/components/Sidebar";
 import { TopNav } from "@/components/TopNav";
 import { ComparisonView } from "@/components/ComparisonView";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { FileText, Loader2, GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Comparison, ComparisonChange } from "@/types";
@@ -171,6 +172,10 @@ export default function ComparePage() {
                 </p>
               </div>
             )}
+
+            <div className="text-center py-4">
+              <LegalDisclaimer />
+            </div>
           </div>
         </main>
       </div>

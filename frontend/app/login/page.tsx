@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Scale, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -95,6 +96,10 @@ export default function LoginPage() {
               Sign up
             </Link>
           </p>
+        </div>
+
+        <div className="w-full max-w-md mt-6 text-center">
+          <LegalDisclaimer />
         </div>
       </div>
     </main>

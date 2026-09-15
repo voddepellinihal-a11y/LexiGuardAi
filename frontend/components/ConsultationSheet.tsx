@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Copy, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
+import { formatConsultationSheet } from "@/lib/legal";
 import type { ConsultationSheet as ConsultationSheetType } from "@/types";
 
 interface ConsultationSheetProps {
@@ -13,53 +15,14 @@ export function ConsultationSheet({ sheet }: ConsultationSheetProps) {
   const [copied, setCopied] = useState(false);
   const content = sheet.content;
 
-  const formatSheet = (): string => {
-    let text = `LEGAL CONSULTATION PREP SHEET\n\n`;
-    text += `Document: ${content.document_name}\n`;
-    text += `Contract Type: ${content.contract_type || "Not specified"}\n`;
-    text += `User Role: ${content.user_role}\n\n`;
-
-    text += `TOP RISKS\n`;
-    content.top_risks.forEach((risk, i) => {
-      text += `${i + 1}. ${risk}\n`;
-    });
-
-    text += `\nIMPORTANT OBLIGATIONS\n`;
-    content.important_obligations.forEach((obl, i) => {
-      text += `${i + 1}. ${obl}\n`;
-    });
-
-    text += `\nIMPORTANT DEADLINES\n`;
-    content.important_deadlines.forEach((dl, i) => {
-      text += `${i + 1}. ${dl}\n`;
-    });
-
-    text += `\nAMBIGUOUS CLAUSES\n`;
-    content.ambiguous_clauses.forEach((ac, i) => {
-      text += `${i + 1}. ${ac}\n`;
-    });
-
-    text += `\nQUESTIONS FOR LAWYER\n`;
-    content.questions_for_lawyer.forEach((q, i) => {
-      text += `${i + 1}. ${q}\n`;
-    });
-
-    text += `\nCLAUSES REQUIRING REVIEW\n`;
-    content.clauses_requiring_review.forEach((cr, i) => {
-      text += `${i + 1}. ${cr}\n`;
-    });
-
-    return text;
-  };
-
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(formatSheet());
+    navigator.clipboard.writeText(formatConsultationSheet(content));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const downloadSheet = () => {
-    const blob = new Blob([formatSheet()], { type: "text/plain" });
+    const blob = new Blob([formatConsultationSheet(content)], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -76,11 +39,11 @@ export function ConsultationSheet({ sheet }: ConsultationSheetProps) {
         </h3>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={copyToClipboard}>
-            <Copy className="h-4 w-4 mr-1" />
+            <Copy aria-hidden="true" className="h-4 w-4 mr-1" />
             {copied ? "Copied!" : "Copy"}
           </Button>
           <Button variant="outline" size="sm" onClick={downloadSheet}>
-            <Download className="h-4 w-4 mr-1" />
+            <Download aria-hidden="true" className="h-4 w-4 mr-1" />
             Export
           </Button>
         </div>
@@ -108,6 +71,10 @@ export function ConsultationSheet({ sheet }: ConsultationSheetProps) {
         <Section title="Ambiguous Clauses" items={content.ambiguous_clauses} color="risk-medium" />
         <Section title="Questions for Lawyer" items={content.questions_for_lawyer} color="primary" />
         <Section title="Clauses Requiring Review" items={content.clauses_requiring_review} color="risk-high" />
+      </div>
+
+      <div className="mt-6 border-t border-border pt-4">
+        <LegalDisclaimer />
       </div>
     </div>
   );

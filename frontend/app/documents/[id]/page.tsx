@@ -15,6 +15,7 @@ import {
 import { Sidebar } from "@/components/Sidebar";
 import { TopNav } from "@/components/TopNav";
 import { StatusBadge } from "@/components/StatusBadge";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import { RiskScoreCard } from "@/components/RiskScoreCard";
 import { RiskFindingCard } from "@/components/RiskFindingCard";
 import { RoleSelector } from "@/components/RoleSelector";
@@ -393,6 +394,10 @@ export default function DocumentDetailPage() {
                 )}
               </>
             )}
+
+            <div className="text-center py-4">
+              <LegalDisclaimer />
+            </div>
           </div>
         </main>
       </div>

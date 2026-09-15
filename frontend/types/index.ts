@@ -120,6 +120,7 @@ export interface ConsultationSheet {
     ambiguous_clauses: string[];
     questions_for_lawyer: string[];
     clauses_requiring_review: string[];
+    disclaimer?: string;
   };
   created_at: string;
 }

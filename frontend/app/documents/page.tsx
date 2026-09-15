@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { TopNav } from "@/components/TopNav";
 import { DocumentUpload } from "@/components/DocumentUpload";
 import { StatusBadge } from "@/components/StatusBadge";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import Link from "next/link";
 import { FileText, Trash2, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -66,7 +67,7 @@ export default function DocumentsPage() {
                 </div>
               ) : !documents || documents.length === 0 ? (
                 <div className="card text-center py-12">
-                  <FileText className="h-12 w-12 text-text-muted mx-auto mb-4" />
+                  <FileText aria-hidden="true" className="h-12 w-12 text-text-muted mx-auto mb-4" />
                   <h3 className="text-card-title font-semibold text-primary mb-2">
                     No documents yet
                   </h3>
@@ -83,14 +84,14 @@ export default function DocumentsPage() {
                           href={`/documents/${doc.id}`}
                           className="flex items-center gap-3 flex-1 hover:opacity-80 transition-opacity"
                         >
-                          <FileText className="h-5 w-5 text-text-muted" />
+                          <FileText aria-hidden="true" className="h-5 w-5 text-text-muted" />
                           <div className="flex-1">
                             <h3 className="text-sm font-medium text-text-primary">
                               {doc.filename}
                             </h3>
                             <div className="flex items-center gap-3 text-xs text-text-muted mt-1">
                               <span className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
+                                <Calendar aria-hidden="true" className="h-3 w-3" />
                                 {new Date(doc.created_at).toLocaleDateString()}
                               </span>
                               {doc.file_size && (
@@ -120,6 +121,10 @@ export default function DocumentsPage() {
                   ))}
                 </div>
               )}
+            </div>
+
+            <div className="text-center py-4">
+              <LegalDisclaimer />
             </div>
           </div>
         </main>

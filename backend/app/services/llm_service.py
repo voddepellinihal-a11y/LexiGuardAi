@@ -75,10 +75,19 @@ async def generate_structured_analysis(
     if detect_prompt_injection(document_text[:2000]):
         logger.warning("prompt_injection_in_document")
 
-    prompt = f"""Analyze this legal document and provide a structured risk analysis.
+    prompt = f"""Analyze this legal document and provide a structured 4-layer risk analysis.
+
+LAYER 1 - RISK EXTRACTION: flag high-risk clauses (indemnification, liability, termination, renewal, penalties).
+LAYER 2 - AMBIGUITY DETECTION: flag vague language, undefined terms, conflicting or missing conditions.
+LAYER 3 - OBLIGATION MAPPING: extract party -> action -> deadline -> condition with source sections.
+LAYER 4 - FAIR CLAUSE DRAFTING: for each high/medium finding propose a balanced alternative draft.
 
 User Role: {safe_role}
 Negotiation Stance: {safe_stance}
+
+Prioritize risks from the perspective of the user's role. Tailor recommendations to the stance:
+Aggressive = maximum user protection; Balanced = important risks with practical negotiation;
+Flexible = commercially acceptable compromises. Different stances must yield different recommendations.
 
 Document Clauses:
 {json.dumps(clauses[:20], indent=2)}
@@ -130,10 +139,18 @@ Provide your analysis as a JSON object with this EXACT structure:
         }}
     ],
     "ambiguities": ["<list of ambiguous clauses or terms>"],
+    "alternative_drafts": [
+        {{
+            "title": "<which finding this addresses>",
+            "original_concern": "<problem with the original clause>",
+            "suggested_alternative": "<AI-generated draft suggestion for review, not legal advice>",
+            "reason_for_change": "<why the alternative better protects the user's role under the chosen stance>"
+        }}
+    ],
     "plain_english_summary": "<2-3 paragraph plain English summary of the document and key findings>"
 }}
 
-Respond ONLY with valid JSON."""
+Respond ONLY with valid JSON. Label all drafts as suggestions for professional review, not legal advice."""
 
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -276,9 +293,9 @@ User question: {safe_question}
 Rules:
 1. Answer based ONLY on the provided document sections.
 2. If the document does not contain enough information, say: "I could not find sufficient information in the provided document to answer this question."
-3. Cite the section and page for each claim.
+3. Support every factual claim with a verbatim citation in the exact format "Section X, Paragraph Y" plus the quoted clause text.
 4. Use conservative language: "appears to", "may", "the document states".
-5. Do not fabricate any information.
+5. Do not fabricate clauses, dates, parties, obligations, penalties, or citations.
 
 Respond with JSON:
 {{

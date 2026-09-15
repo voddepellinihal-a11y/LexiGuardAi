@@ -21,6 +21,12 @@ import structlog
 
 logger = structlog.get_logger()
 
+LEGAL_DISCLAIMER = (
+    "This platform provides legal information and document analysis for assistance "
+    "and educational purposes. It does not provide formal legal advice, does not "
+    "replace a qualified legal professional, and does not create an attorney-client relationship."
+)
+
 
 def sanitize_filename(filename: str) -> str:
     name = Path(filename).name
@@ -429,6 +435,7 @@ class ConsultationService:
             deadlines=[],
             ambiguities=[],
         )
+        result["disclaimer"] = LEGAL_DISCLAIMER
 
         sheet = await self.sheet_repo.create({
             "user_id": user_id,
