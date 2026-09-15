@@ -10,6 +10,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import Link from "next/link";
 import { FileText, Upload, GitCompare, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -154,10 +155,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="text-center py-4">
-              <p className="text-xs text-text-muted">
-                This platform provides legal information for assistance purposes only.
-                It does not provide formal legal advice or replace a qualified legal professional.
-              </p>
+              <LegalDisclaimer />
             </div>
           </div>
         </main>

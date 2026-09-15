@@ -81,6 +81,7 @@ async def generate_structured_analysis(
     safe_stance = sanitize_for_llm_context(negotiation_stance[:100])
     if detect_prompt_injection(document_text[:2000]):
         logger.warning("prompt_injection_in_document")
+        raise ValueError("Document contains disallowed instructions")
 
     prompt = f"""Analyze this legal document and provide a structured 4-layer risk analysis.
 
@@ -176,6 +177,10 @@ async def generate_comparison(
     clauses_a: List[dict],
     clauses_b: List[dict],
 ) -> dict:
+    if detect_prompt_injection(doc_a_text[:2000]) or detect_prompt_injection(doc_b_text[:2000]):
+        logger.warning("prompt_injection_in_comparison_document")
+        raise ValueError("Document contains disallowed instructions")
+
     prompt = f"""Compare these two legal document versions and identify meaningful changes.
 
 VERSION A text (first 4000 chars):

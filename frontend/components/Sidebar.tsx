@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 import {
   LayoutDashboard,
   FileText,
@@ -70,9 +71,7 @@ export function Sidebar() {
       </div>
 
       <div className="px-6 py-4 border-t border-border">
-        <p className="text-xs text-text-muted leading-relaxed">
-          This platform provides legal information for assistance purposes only. It does not provide formal legal advice.
-        </p>
+        <LegalDisclaimer />
       </div>
     </aside>
   );

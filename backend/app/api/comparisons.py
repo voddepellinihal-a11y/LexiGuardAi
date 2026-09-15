@@ -36,6 +36,8 @@ async def create_comparison(
             created_at=datetime.now(timezone.utc),
         )
     except ValueError as e:
+        if "disallowed instructions" in str(e):
+            raise HTTPException(status_code=400, detail=str(e))
         raise HTTPException(status_code=404, detail=str(e))
     except Exception:
         raise HTTPException(status_code=500, detail="Comparison failed")

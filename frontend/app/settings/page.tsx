@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Sidebar } from "@/components/Sidebar";
 import { TopNav } from "@/components/TopNav";
 import { Shield, AlertTriangle } from "lucide-react";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 export default function SettingsPage() {
   const { user, loading } = useAuth();
@@ -78,12 +79,7 @@ export default function SettingsPage() {
                   Legal Disclaimer
                 </h2>
               </div>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                This platform provides legal information and document analysis for assistance
-                and educational purposes. It does not provide formal legal advice, does not
-                replace a qualified legal professional, and does not create an attorney-client
-                relationship.
-              </p>
+              <LegalDisclaimer className="text-sm text-text-secondary" />
             </div>
           </div>
         </main>

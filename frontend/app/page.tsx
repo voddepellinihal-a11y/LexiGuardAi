@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { Scale, FileText, Shield, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LegalDisclaimer } from "@/components/LegalDisclaimer";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -80,11 +81,7 @@ export default function Home() {
         </div>
 
         <div className="mt-16 card text-center">
-          <p className="text-sm text-text-muted leading-relaxed max-w-2xl mx-auto">
-            This platform provides legal information and document analysis for assistance and educational purposes.
-            It does not provide formal legal advice, does not replace a qualified legal professional,
-            and does not create an attorney-client relationship.
-          </p>
+          <LegalDisclaimer className="text-sm max-w-2xl mx-auto" />
         </div>
       </main>
     </div>

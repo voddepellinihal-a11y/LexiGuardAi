@@ -1,8 +1,13 @@
 from supabase import Client, PostgrestAPIError
 from typing import Optional, List, Dict, Any
+import asyncio
 import structlog
 
 logger = structlog.get_logger()
+
+
+async def _exec(query):
+    return await asyncio.to_thread(query.execute)
 
 
 class DocumentRepository:
@@ -11,7 +16,7 @@ class DocumentRepository:
 
     async def create(self, data: dict) -> dict:
         try:
-            result = self.client.table("documents").upsert(data).execute()
+            result = await _exec(self.client.table("documents").upsert(data))
             return result.data[0] if result.data else {}
         except PostgrestAPIError as e:
             logger.error("doc_create_error", error=str(e))
@@ -22,19 +27,18 @@ class DocumentRepository:
             q = self.client.table("documents").select("*").eq("id", document_id)
             if user_id:
                 q = q.eq("user_id", user_id)
-            result = q.single().execute()
+            result = await _exec(q.single())
             return result.data
         except PostgrestAPIError:
             return None
 
     async def get_by_user(self, user_id: str) -> List[dict]:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("documents")
                 .select("*")
                 .eq("user_id", user_id)
                 .order("created_at", desc=True)
-                .execute()
             )
             return result.data or []
         except PostgrestAPIError:
@@ -45,13 +49,13 @@ class DocumentRepository:
             data = {"status": status}
             if error:
                 data["error"] = error
-            self.client.table("documents").update(data).eq("id", document_id).execute()
+            await _exec(self.client.table("documents").update(data).eq("id", document_id))
         except PostgrestAPIError as e:
             logger.error("doc_update_status_error", error=str(e))
 
     async def delete(self, document_id: str, user_id: str) -> bool:
         try:
-            self.client.table("documents").delete().eq("id", document_id).eq("user_id", user_id).execute()
+            await _exec(self.client.table("documents").delete().eq("id", document_id).eq("user_id", user_id))
             return True
         except PostgrestAPIError:
             return False
@@ -65,7 +69,7 @@ class DocumentSectionRepository:
         if not sections:
             return []
         try:
-            result = self.client.table("document_sections").insert(sections).execute()
+            result = await _exec(self.client.table("document_sections").insert(sections))
             return result.data or []
         except PostgrestAPIError as e:
             logger.error("section_create_many_error", error=str(e))
@@ -80,7 +84,7 @@ class ClauseRepository:
         if not clauses:
             return []
         try:
-            result = self.client.table("clauses").insert(clauses).execute()
+            result = await _exec(self.client.table("clauses").insert(clauses))
             return result.data or []
         except PostgrestAPIError as e:
             logger.error("clause_create_many_error", error=str(e))
@@ -88,12 +92,11 @@ class ClauseRepository:
 
     async def get_by_document(self, document_id: str) -> List[dict]:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("clauses")
                 .select("*")
                 .eq("document_id", document_id)
                 .order("clause_order")
-                .execute()
             )
             return result.data or []
         except PostgrestAPIError:
@@ -102,14 +105,14 @@ class ClauseRepository:
     async def search_similar(self, embedding: list, document_id: str, limit: int = 5) -> List[dict]:
         try:
             embedding_str = str(embedding)
-            result = self.client.rpc(
+            result = await _exec(self.client.rpc(
                 "match_clauses",
                 {
                     "query_embedding": embedding_str,
                     "match_document_id": document_id,
                     "match_count": limit,
                 },
-            ).execute()
+            ))
             return result.data or []
         except PostgrestAPIError as e:
             logger.error("clause_search_error", error=str(e))
@@ -122,7 +125,7 @@ class AnalysisRepository:
 
     async def create(self, data: dict) -> dict:
         try:
-            result = self.client.table("analyses").insert(data).execute()
+            result = await _exec(self.client.table("analyses").insert(data))
             return result.data[0] if result.data else {}
         except PostgrestAPIError as e:
             logger.error("analysis_create_error", error=str(e))
@@ -130,20 +133,19 @@ class AnalysisRepository:
 
     async def update(self, analysis_id: str, data: dict) -> None:
         try:
-            self.client.table("analyses").update(data).eq("id", analysis_id).execute()
+            await _exec(self.client.table("analyses").update(data).eq("id", analysis_id))
         except PostgrestAPIError as e:
             logger.error("analysis_update_error", error=str(e))
 
     async def get_latest_by_document(self, document_id: str) -> Optional[dict]:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("analyses")
                 .select("*")
                 .eq("document_id", document_id)
                 .order("created_at", desc=True)
                 .limit(1)
                 .single()
-                .execute()
             )
             return result.data
         except PostgrestAPIError:
@@ -158,7 +160,7 @@ class RiskFindingRepository:
         if not findings:
             return []
         try:
-            result = self.client.table("risk_findings").insert(findings).execute()
+            result = await _exec(self.client.table("risk_findings").insert(findings))
             return result.data or []
         except PostgrestAPIError as e:
             logger.error("risk_create_many_error", error=str(e))
@@ -166,12 +168,11 @@ class RiskFindingRepository:
 
     async def get_by_document(self, document_id: str) -> List[dict]:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("risk_findings")
                 .select("*")
                 .eq("document_id", document_id)
                 .order("score", desc=True)
-                .execute()
             )
             return result.data or []
         except PostgrestAPIError:
@@ -186,7 +187,7 @@ class ObligationRepository:
         if not obligations:
             return []
         try:
-            result = self.client.table("obligations").insert(obligations).execute()
+            result = await _exec(self.client.table("obligations").insert(obligations))
             return result.data or []
         except PostgrestAPIError as e:
             logger.error("obligation_create_many_error", error=str(e))
@@ -194,11 +195,10 @@ class ObligationRepository:
 
     async def get_by_document(self, document_id: str) -> List[dict]:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("obligations")
                 .select("*")
                 .eq("document_id", document_id)
-                .execute()
             )
             return result.data or []
         except PostgrestAPIError:
@@ -211,7 +211,7 @@ class ComparisonRepository:
 
     async def create(self, data: dict) -> dict:
         try:
-            result = self.client.table("comparisons").insert(data).execute()
+            result = await _exec(self.client.table("comparisons").insert(data))
             return result.data[0] if result.data else {}
         except PostgrestAPIError as e:
             logger.error("comparison_create_error", error=str(e))
@@ -219,19 +219,18 @@ class ComparisonRepository:
 
     async def update(self, comparison_id: str, data: dict) -> None:
         try:
-            self.client.table("comparisons").update(data).eq("id", comparison_id).execute()
+            await _exec(self.client.table("comparisons").update(data).eq("id", comparison_id))
         except PostgrestAPIError as e:
             logger.error("comparison_update_error", error=str(e))
 
     async def get_by_id(self, comparison_id: str, user_id: str) -> Optional[dict]:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("comparisons")
                 .select("*")
                 .eq("id", comparison_id)
                 .eq("user_id", user_id)
                 .single()
-                .execute()
             )
             return result.data
         except PostgrestAPIError:
@@ -246,7 +245,7 @@ class ComparisonChangeRepository:
         if not changes:
             return []
         try:
-            result = self.client.table("comparison_changes").insert(changes).execute()
+            result = await _exec(self.client.table("comparison_changes").insert(changes))
             return result.data or []
         except PostgrestAPIError as e:
             logger.error("change_create_many_error", error=str(e))
@@ -254,11 +253,10 @@ class ComparisonChangeRepository:
 
     async def get_by_comparison(self, comparison_id: str) -> List[dict]:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("comparison_changes")
                 .select("*")
                 .eq("comparison_id", comparison_id)
-                .execute()
             )
             return result.data or []
         except PostgrestAPIError:
@@ -271,20 +269,18 @@ class ChatRepository:
 
     async def get_or_create_session(self, user_id: str, document_id: str) -> dict:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("chat_sessions")
                 .select("*")
                 .eq("user_id", user_id)
                 .eq("document_id", document_id)
                 .limit(1)
-                .execute()
             )
             if result.data:
                 return result.data[0]
-            result = (
+            result = await _exec(
                 self.client.table("chat_sessions")
                 .insert({"user_id": user_id, "document_id": document_id})
-                .execute()
             )
             return result.data[0] if result.data else {}
         except PostgrestAPIError as e:
@@ -293,23 +289,22 @@ class ChatRepository:
 
     async def add_message(self, session_id: str, role: str, content: str, grounded: bool = False) -> None:
         try:
-            self.client.table("chat_messages").insert({
+            await _exec(self.client.table("chat_messages").insert({
                 "session_id": session_id,
                 "role": role,
                 "content": content,
                 "grounded": grounded,
-            }).execute()
+            }))
         except PostgrestAPIError as e:
             logger.error("chat_message_error", error=str(e))
 
     async def get_messages(self, session_id: str) -> List[dict]:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("chat_messages")
                 .select("*")
                 .eq("session_id", session_id)
                 .order("created_at")
-                .execute()
             )
             return result.data or []
         except PostgrestAPIError:
@@ -322,7 +317,7 @@ class ConsultationSheetRepository:
 
     async def create(self, data: dict) -> dict:
         try:
-            result = self.client.table("consultation_sheets").insert(data).execute()
+            result = await _exec(self.client.table("consultation_sheets").insert(data))
             return result.data[0] if result.data else {}
         except PostgrestAPIError as e:
             logger.error("consultation_create_error", error=str(e))
@@ -330,7 +325,7 @@ class ConsultationSheetRepository:
 
     async def get_by_document(self, document_id: str, user_id: str) -> Optional[dict]:
         try:
-            result = (
+            result = await _exec(
                 self.client.table("consultation_sheets")
                 .select("*")
                 .eq("document_id", document_id)
@@ -338,7 +333,6 @@ class ConsultationSheetRepository:
                 .order("created_at", desc=True)
                 .limit(1)
                 .single()
-                .execute()
             )
             return result.data
         except PostgrestAPIError:

@@ -1,6 +1,8 @@
 import os
 from uuid import UUID
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, status
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Request, status
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from app.core.auth import get_current_user
 from app.core.database import get_supabase_client
 from app.core.config import settings
@@ -9,10 +11,13 @@ from app.schemas.responses import DocumentUploadResponse, DocumentResponse
 from typing import List
 
 router = APIRouter(prefix="/documents", tags=["documents"])
+limiter = Limiter(key_func=get_remote_address)
 
 
 @router.post("", response_model=DocumentUploadResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("10/minute")
 async def upload_document(
+    request: Request,
     file: UploadFile = File(...),
     user: dict = Depends(get_current_user),
 ):
@@ -42,7 +47,9 @@ async def upload_document(
 
 
 @router.post("/{document_id}/process")
+@limiter.limit("5/minute")
 async def process_document(
+    request: Request,
     document_id: UUID,
     user: dict = Depends(get_current_user),
 ):
@@ -79,7 +86,9 @@ async def get_document(
 
 
 @router.delete("/{document_id}")
+@limiter.limit("10/minute")
 async def delete_document(
+    request: Request,
     document_id: UUID,
     user: dict = Depends(get_current_user),
 ):

@@ -1,5 +1,6 @@
 import re
 import uuid
+import asyncio
 from datetime import datetime, timezone
 from pathlib import Path
 from supabase import Client
@@ -47,7 +48,8 @@ class DocumentService:
         safe_name = sanitize_filename(filename)
 
         storage_path = f"{user_id}/{doc_id}/{safe_name}"
-        self.supabase.storage.from_(settings.STORAGE_BUCKET).upload(
+        await asyncio.to_thread(
+            self.supabase.storage.from_(settings.STORAGE_BUCKET).upload,
             path=storage_path,
             file=file_content,
             file_options={"content-type": "application/octet-stream"},
@@ -72,8 +74,9 @@ class DocumentService:
         try:
             await self.doc_repo.update_status(document_id, "processing")
 
-            file_bytes = self.supabase.storage.from_(settings.STORAGE_BUCKET).download(
-                doc["storage_path"]
+            file_bytes = await asyncio.to_thread(
+                self.supabase.storage.from_(settings.STORAGE_BUCKET).download,
+                doc["storage_path"],
             )
 
             parsed = await self.parser.parse_file(file_bytes, doc["filename"])
@@ -135,8 +138,9 @@ class DocumentService:
         doc = await self.doc_repo.get_by_id(document_id, user_id)
         if doc:
             try:
-                self.supabase.storage.from_(settings.STORAGE_BUCKET).remove(
-                    [doc["storage_path"]]
+                await asyncio.to_thread(
+                    self.supabase.storage.from_(settings.STORAGE_BUCKET).remove,
+                    [doc["storage_path"]],
                 )
             except Exception:
                 pass
@@ -167,8 +171,9 @@ class AnalysisService:
 
         try:
             clauses = await self.clause_repo.get_by_document(document_id)
-            file_bytes = self.supabase.storage.from_(settings.STORAGE_BUCKET).download(
-                doc["storage_path"]
+            file_bytes = await asyncio.to_thread(
+                self.supabase.storage.from_(settings.STORAGE_BUCKET).download,
+                doc["storage_path"],
             )
             parsed = await DocumentParser(self.supabase).parse_file(file_bytes, doc["filename"])
 
@@ -302,12 +307,12 @@ class ChatService:
         return result
 
     async def get_sessions(self, user_id: str, document_id: str) -> List[dict]:
-        result = (
+        result = await asyncio.to_thread(
             self.supabase.table("chat_sessions")
             .select("*")
             .eq("user_id", user_id)
             .eq("document_id", document_id)
-            .execute()
+            .execute
         )
         return result.data or []
 
@@ -341,11 +346,13 @@ class ComparisonService:
         })
 
         try:
-            file_a = self.supabase.storage.from_(settings.STORAGE_BUCKET).download(
-                doc_a["storage_path"]
+            file_a = await asyncio.to_thread(
+                self.supabase.storage.from_(settings.STORAGE_BUCKET).download,
+                doc_a["storage_path"],
             )
-            file_b = self.supabase.storage.from_(settings.STORAGE_BUCKET).download(
-                doc_b["storage_path"]
+            file_b = await asyncio.to_thread(
+                self.supabase.storage.from_(settings.STORAGE_BUCKET).download,
+                doc_b["storage_path"],
             )
 
             parsed_a = await self.parser.parse_file(file_a, doc_a["filename"])
