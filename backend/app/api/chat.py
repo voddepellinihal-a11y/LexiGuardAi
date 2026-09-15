@@ -6,6 +6,7 @@ from app.core.auth import get_current_user
 from app.core.database import get_supabase_client
 from app.services.main_service import ChatService
 from app.schemas.responses import ChatRequest, ChatResponse
+from app.utils.security import detect_prompt_injection
 
 router = APIRouter(prefix="/documents", tags=["chat"])
 limiter = Limiter(key_func=get_remote_address)
@@ -19,6 +20,8 @@ async def chat_about_document(
     body: ChatRequest,
     user: dict = Depends(get_current_user),
 ):
+    if detect_prompt_injection(body.question):
+        raise HTTPException(status_code=400, detail="Question contains disallowed instructions")
     supabase = get_supabase_client()
     service = ChatService(supabase)
     try:

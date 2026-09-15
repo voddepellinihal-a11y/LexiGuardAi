@@ -1,7 +1,7 @@
-import os
 import re
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 from supabase import Client
 from typing import Optional, List, Dict, Any
 from app.repositories.repositories import (
@@ -23,7 +23,7 @@ logger = structlog.get_logger()
 
 
 def sanitize_filename(filename: str) -> str:
-    name = os.path.basename(filename)
+    name = Path(filename).name
     name = re.sub(r"[^a-zA-Z0-9._-]", "_", name)[:200]
     return name or "document"
 
