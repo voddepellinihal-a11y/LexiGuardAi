@@ -1,18 +1,18 @@
-from openai import OpenAI
+from openai import AsyncOpenAI
 from app.core.config import settings
 from typing import List
 import structlog
 
 logger = structlog.get_logger()
 
-client = OpenAI(api_key=settings.LLM_API_KEY)
+client = AsyncOpenAI(api_key=settings.LLM_API_KEY)
 
 
-async def generate_embeddings(texts: List[str]) -> List[list]:
+async def generate_embeddings(texts: List[str]) -> List[List[float]]:
     if not texts:
         return []
     try:
-        response = client.embeddings.create(
+        response = await client.embeddings.create(
             model=settings.EMBEDDING_MODEL,
             input=texts,
         )
@@ -22,6 +22,6 @@ async def generate_embeddings(texts: List[str]) -> List[list]:
         raise
 
 
-async def generate_single_embedding(text: str) -> list:
+async def generate_single_embedding(text: str) -> List[float]:
     embeddings = await generate_embeddings([text])
     return embeddings[0] if embeddings else []

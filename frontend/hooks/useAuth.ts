@@ -40,10 +40,10 @@ export function useAuth() {
 
     getUser();
 
-    let subscription: any;
+    let subscription: { unsubscribe: () => void } | undefined;
     try {
       const result = supabase.auth.onAuthStateChange(
-        async (event: string, session: { user?: { id: string; email?: string } } | null) => {
+        async (_event: string, session: { user?: { id: string; email?: string } } | null) => {
           if (session?.user) {
             setUser({
               user_id: session.user.id,

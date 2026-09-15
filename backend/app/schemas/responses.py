@@ -29,9 +29,12 @@ class DocumentResponse(BaseModel):
     processed_at: Optional[datetime] = None
 
 
+from app.schemas.ai import UserRole, NegotiationStance
+
+
 class AnalysisRequest(BaseModel):
-    role: str = Field(..., description="User role in the contract")
-    negotiation_stance: str = Field(default="balanced", description="Aggressive, Balanced, or Flexible")
+    role: UserRole = Field(..., description="User role in the contract")
+    negotiation_stance: NegotiationStance = Field(default=NegotiationStance.BALANCED, description="Aggressive, Balanced, or Flexible")
 
 
 class AnalysisResponse(BaseModel):

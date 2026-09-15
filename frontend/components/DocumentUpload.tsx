@@ -66,13 +66,13 @@ export function DocumentUpload() {
       }`}
     >
       {uploading ? (
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-10 w-10 text-accent animate-spin" />
+        <div className="flex flex-col items-center gap-3" role="status" aria-live="polite">
+          <Loader2 aria-hidden="true" className="h-10 w-10 text-accent animate-spin" />
           <p className="text-text-secondary">Uploading and processing document...</p>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-3">
-          <Upload className="h-10 w-10 text-text-muted" />
+          <Upload aria-hidden="true" className="h-10 w-10 text-text-muted" />
           <div>
             <p className="text-lg font-medium text-text-primary">
               Upload a Legal Document
@@ -81,12 +81,15 @@ export function DocumentUpload() {
               Drag and drop or click to upload PDF, DOCX, TXT, or images
             </p>
           </div>
+          <label htmlFor="document-file-input" className="sr-only">Select a legal document to upload</label>
           <input
             ref={inputRef}
+            id="document-file-input"
             type="file"
             className="hidden"
             accept=".pdf,.docx,.txt,.png,.jpg,.jpeg,.tiff,.bmp"
             onChange={onFileSelect}
+            aria-label="Select a legal document to upload"
           />
           <Button
             type="button"
@@ -94,7 +97,7 @@ export function DocumentUpload() {
             disabled={uploading}
             onClick={() => inputRef.current?.click()}
           >
-            <FileText className="h-4 w-4 mr-2" />
+            <FileText aria-hidden="true" className="h-4 w-4 mr-2" />
             Select File
           </Button>
           <p className="text-xs text-text-muted">Maximum file size: 50MB</p>

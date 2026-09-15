@@ -22,9 +22,13 @@ const mockClient = {
   storage: { from: () => ({ upload: () => ({ data: null, error: null }) }) },
 };
 
-let client: any = null;
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-export function createClient() {
+type AppSupabaseClient = SupabaseClient | typeof mockClient;
+
+let client: AppSupabaseClient | null = null;
+
+export function createClient(): AppSupabaseClient {
   if (client) return client;
 
   if (!isConfigured()) {
@@ -34,10 +38,11 @@ export function createClient() {
 
   // Dynamic import to avoid crash when env vars are missing
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { createClient: createSupabaseClient } = require("@supabase/supabase-js");
-    client = createSupabaseClient(supabaseUrl, supabaseKey);
+    client = createSupabaseClient(supabaseUrl, supabaseKey) as SupabaseClient;
   } catch {
     client = mockClient;
   }
-  return client;
+  return client as AppSupabaseClient;
 }

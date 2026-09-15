@@ -11,10 +11,10 @@ async function getAuthToken(): Promise<string | null> {
   return data.session?.access_token || null;
 }
 
-async function apiRequest(
+async function apiRequest<T = unknown>(
   path: string,
   options: RequestInit = {}
-): Promise<any> {
+): Promise<T> {
   const token = await getAuthToken();
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string>),
@@ -34,18 +34,23 @@ async function apiRequest(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
+    const error: { error?: { detail?: string } } = await response.json().catch(() => ({}));
     throw new Error(error?.error?.detail || `API error: ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Promise<T>;
 }
+
+import type {
+  Analysis, ChatResponse, Comparison, ConsultationSheet,
+  Deadline, Document, Obligation, RiskFinding,
+} from "@/types";
 
 export const api = {
   documents: {
-    list: () => apiRequest("/documents"),
-    get: (id: string) => apiRequest(`/documents/${id}`),
-    upload: async (file: File) => {
+    list: () => apiRequest<Document[]>("/documents"),
+    get: (id: string) => apiRequest<Document>(`/documents/${id}`),
+    upload: async (file: File): Promise<Document> => {
       const formData = new FormData();
       formData.append("file", file);
       const token = await getAuthToken();
@@ -55,40 +60,40 @@ export const api = {
         body: formData,
       });
       if (!response.ok) throw new Error("Upload failed");
-      return response.json();
+      return response.json() as Promise<Document>;
     },
-    process: (id: string) => apiRequest(`/documents/${id}/process`, { method: "POST" }),
-    delete: (id: string) => apiRequest(`/documents/${id}`, { method: "DELETE" }),
+    process: (id: string) => apiRequest<{ document_id: string; status: string }>(`/documents/${id}/process`, { method: "POST" }),
+    delete: (id: string) => apiRequest<{ message: string }>(`/documents/${id}`, { method: "DELETE" }),
   },
   analysis: {
     run: (documentId: string, role: string, stance: string) =>
-      apiRequest(`/documents/${documentId}/analyze`, {
+      apiRequest<Analysis>(`/documents/${documentId}/analyze`, {
         method: "POST",
         body: JSON.stringify({ role, negotiation_stance: stance }),
       }),
-    getRisks: (documentId: string) => apiRequest(`/documents/${documentId}/risks`),
-    getObligations: (documentId: string) => apiRequest(`/documents/${documentId}/obligations`),
-    getDeadlines: (documentId: string) => apiRequest(`/documents/${documentId}/deadlines`),
+    getRisks: (documentId: string) => apiRequest<RiskFinding[]>(`/documents/${documentId}/risks`),
+    getObligations: (documentId: string) => apiRequest<Obligation[]>(`/documents/${documentId}/obligations`),
+    getDeadlines: (documentId: string) => apiRequest<Deadline[]>(`/documents/${documentId}/deadlines`),
   },
   chat: {
     ask: (documentId: string, question: string) =>
-      apiRequest(`/documents/${documentId}/chat`, {
+      apiRequest<ChatResponse>(`/documents/${documentId}/chat`, {
         method: "POST",
         body: JSON.stringify({ question }),
       }),
   },
   comparisons: {
     create: (documentAId: string, documentBId: string) =>
-      apiRequest("/comparisons", {
+      apiRequest<Comparison>("/comparisons", {
         method: "POST",
         body: JSON.stringify({ document_a_id: documentAId, document_b_id: documentBId }),
       }),
-    get: (id: string) => apiRequest(`/comparisons/${id}`),
+    get: (id: string) => apiRequest<Comparison>(`/comparisons/${id}`),
   },
   consultation: {
     generate: (documentId: string) =>
-      apiRequest(`/documents/${documentId}/consultation-sheet`, { method: "POST" }),
+      apiRequest<ConsultationSheet>(`/documents/${documentId}/consultation-sheet`, { method: "POST" }),
     get: (documentId: string) =>
-      apiRequest(`/documents/${documentId}/consultation-sheet`),
+      apiRequest<ConsultationSheet>(`/documents/${documentId}/consultation-sheet`),
   },
 };

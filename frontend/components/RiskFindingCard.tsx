@@ -37,9 +37,11 @@ export function RiskFindingCard({ finding, onAskAI }: RiskFindingCardProps) {
         </div>
         <button
           onClick={() => setExpanded(!expanded)}
-          className="text-text-muted hover:text-text-primary transition-colors"
+          aria-expanded={expanded}
+          aria-label={expanded ? `Collapse details for ${finding.title}` : `Expand details for ${finding.title}`}
+          className="text-text-muted hover:text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-md p-1"
         >
-          {expanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+          {expanded ? <ChevronUp aria-hidden="true" className="h-5 w-5" /> : <ChevronDown aria-hidden="true" className="h-5 w-5" />}
         </button>
       </div>
 
@@ -76,7 +78,7 @@ export function RiskFindingCard({ finding, onAskAI }: RiskFindingCardProps) {
                   onAskAI(`Tell me more about the risk: ${finding.title}`)
                 }
               >
-                <MessageSquare className="h-4 w-4 mr-1" />
+                <MessageSquare aria-hidden="true" className="h-4 w-4 mr-1" />
                 Ask AI
               </Button>
             )}

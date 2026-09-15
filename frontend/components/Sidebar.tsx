@@ -56,6 +56,7 @@ export function Sidebar() {
       <div className="px-3 py-4 border-t border-border">
         <Link
           href="/settings"
+          aria-current={pathname === "/settings" ? "page" : undefined}
           className={cn(
             "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
             pathname === "/settings"
@@ -63,7 +64,7 @@ export function Sidebar() {
               : "text-text-secondary hover:bg-surface-muted hover:text-text-primary"
           )}
         >
-          <Settings className="h-5 w-5" />
+          <Settings aria-hidden="true" className="h-5 w-5" />
           Settings
         </Link>
       </div>

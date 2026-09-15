@@ -42,16 +42,16 @@ export default function SettingsPage() {
             </div>
 
             <div className="card">
-              <h3 className="text-card-title font-semibold text-primary mb-4">
+              <h2 className="text-card-title font-semibold text-primary mb-4">
                 Account
-              </h3>
+              </h2>
               <div className="space-y-3">
                 <div>
-                  <label className="label">Email</label>
+                  <span className="label">Email</span>
                   <p className="text-sm text-text-primary">{user.email}</p>
                 </div>
                 <div>
-                  <label className="label">User ID</label>
+                  <span className="label">User ID</span>
                   <p className="text-sm text-text-muted font-mono">{user.user_id}</p>
                 </div>
               </div>
@@ -59,10 +59,10 @@ export default function SettingsPage() {
 
             <div className="card">
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="h-5 w-5 text-risk-low" />
-                <h3 className="text-card-title font-semibold text-primary">
+                <Shield aria-hidden="true" className="h-5 w-5 text-risk-low" />
+                <h2 className="text-card-title font-semibold text-primary">
                   Security
-                </h3>
+                </h2>
               </div>
               <div className="space-y-2 text-sm text-text-secondary">
                 <p>Authentication is handled by Supabase Auth.</p>
@@ -73,10 +73,10 @@ export default function SettingsPage() {
 
             <div className="card border-risk-medium/30">
               <div className="flex items-center gap-2 mb-4">
-                <AlertTriangle className="h-5 w-5 text-risk-medium" />
-                <h3 className="text-card-title font-semibold text-primary">
+                <AlertTriangle aria-hidden="true" className="h-5 w-5 text-risk-medium" />
+                <h2 className="text-card-title font-semibold text-primary">
                   Legal Disclaimer
-                </h3>
+                </h2>
               </div>
               <p className="text-sm text-text-secondary leading-relaxed">
                 This platform provides legal information and document analysis for assistance

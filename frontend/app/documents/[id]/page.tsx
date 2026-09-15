@@ -125,8 +125,8 @@ export default function DocumentDetailPage() {
             )}
 
             {document.status === "processing" && (
-              <div className="card text-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-accent mx-auto mb-3" />
+              <div className="card text-center py-8" role="status" aria-live="polite">
+                <Loader2 aria-hidden="true" className="h-8 w-8 animate-spin text-accent mx-auto mb-3" />
                 <p className="text-text-secondary">Processing document...</p>
                 <p className="text-xs text-text-muted mt-1">
                   Parsing, extracting clauses, and building knowledge index
@@ -135,8 +135,8 @@ export default function DocumentDetailPage() {
             )}
 
             {document.status === "failed" && (
-              <div className="card text-center py-8 border-risk-high/30">
-                <AlertTriangle className="h-8 w-8 text-risk-high mx-auto mb-3" />
+              <div className="card text-center py-8 border-risk-high/30" role="alert">
+                <AlertTriangle aria-hidden="true" className="h-8 w-8 text-risk-high mx-auto mb-3" />
                 <p className="text-risk-high font-medium">Processing Failed</p>
                 <p className="text-sm text-text-secondary mt-1">
                   {document.processing_error || "An error occurred while processing the document."}
@@ -146,25 +146,29 @@ export default function DocumentDetailPage() {
 
             {document.status === "ready" && (
               <>
-                <div className="flex gap-1 border-b border-border overflow-x-auto">
+                <div role="tablist" aria-label="Document sections" className="flex gap-1 border-b border-border overflow-x-auto">
                   {tabs.map((tab) => (
                     <button
                       key={tab.id}
+                      role="tab"
+                      id={`tab-${tab.id}`}
+                      aria-selected={activeTab === tab.id}
+                      aria-controls={`tabpanel-${tab.id}`}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-t-md ${
                         activeTab === tab.id
                           ? "border-accent text-accent"
                           : "border-transparent text-text-secondary hover:text-text-primary"
                       }`}
                     >
-                      <tab.icon className="h-4 w-4" />
+                      <tab.icon aria-hidden="true" className="h-4 w-4" />
                       {tab.label}
                     </button>
                   ))}
                 </div>
 
                 {activeTab === "overview" && (
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div role="tabpanel" id="tabpanel-overview" aria-labelledby="tab-overview" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-1">
                       <RiskScoreCard
                         score={latestScore}
@@ -231,7 +235,7 @@ export default function DocumentDetailPage() {
                 )}
 
                 {activeTab === "risks" && (
-                  <div className="space-y-4">
+                  <div role="tabpanel" id="tabpanel-risks" aria-labelledby="tab-risks" className="space-y-4">
                     {risks.length === 0 ? (
                       <div className="card text-center py-12">
                         <AlertTriangle className="h-12 w-12 text-text-muted mx-auto mb-4" />
@@ -258,7 +262,7 @@ export default function DocumentDetailPage() {
                 )}
 
                 {activeTab === "clauses" && (
-                  <div className="space-y-4">
+                  <div role="tabpanel" id="tabpanel-clauses" aria-labelledby="tab-clauses" className="space-y-4">
                     {risks.length === 0 ? (
                       <div className="card text-center py-12">
                         <BookOpen className="h-12 w-12 text-text-muted mx-auto mb-4" />
@@ -290,7 +294,7 @@ export default function DocumentDetailPage() {
                 )}
 
                 {activeTab === "obligations" && (
-                  <div className="space-y-4">
+                  <div role="tabpanel" id="tabpanel-obligations" aria-labelledby="tab-obligations" className="space-y-4">
                     {obligations.length === 0 ? (
                       <div className="card text-center py-12">
                         <ListChecks className="h-12 w-12 text-text-muted mx-auto mb-4" />
@@ -328,7 +332,7 @@ export default function DocumentDetailPage() {
                 )}
 
                 {activeTab === "deadlines" && (
-                  <div className="space-y-4">
+                  <div role="tabpanel" id="tabpanel-deadlines" aria-labelledby="tab-deadlines" className="space-y-4">
                     {deadlines.length === 0 ? (
                       <div className="card text-center py-12">
                         <Clock className="h-12 w-12 text-text-muted mx-auto mb-4" />
@@ -355,13 +359,13 @@ export default function DocumentDetailPage() {
                 )}
 
                 {activeTab === "chat" && (
-                  <div className="card">
+                  <div role="tabpanel" id="tabpanel-chat" aria-labelledby="tab-chat" className="card">
                     <AIChat documentId={documentId} documentName={document.filename} />
                   </div>
                 )}
 
                 {activeTab === "consultation" && (
-                  <div>
+                  <div role="tabpanel" id="tabpanel-consultation" aria-labelledby="tab-consultation">
                     {consultationSheet ? (
                       <ConsultationSheet sheet={consultationSheet} />
                     ) : (

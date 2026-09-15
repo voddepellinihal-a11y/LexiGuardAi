@@ -18,7 +18,8 @@ export function RiskScoreCard({ score, classification, factors }: RiskScoreCardP
     <div className="card">
       <div className="flex flex-col items-center">
         <div className="relative w-36 h-36">
-          <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120" role="img" aria-label={`Risk score ${score} out of 100, ${classification}`}>
+            <title>{`Risk score ${score}/100 (${classification})`}</title>
             <circle
               cx="60"
               cy="60"

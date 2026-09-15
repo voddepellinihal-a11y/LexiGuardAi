@@ -1,13 +1,13 @@
-from openai import OpenAI
-from pydantic import BaseModel, Field
+from openai import AsyncOpenAI
 from typing import List, Optional
 import json
 from app.core.config import settings
+from app.utils.security import sanitize_for_llm_context, detect_prompt_injection
 import structlog
 
 logger = structlog.get_logger()
 
-client = OpenAI(api_key=settings.LLM_API_KEY)
+client = AsyncOpenAI(api_key=settings.LLM_API_KEY)
 
 SYSTEM_PROMPT = """You are a legal document analysis assistant. You provide legal information and document analysis for assistance and educational purposes.
 
@@ -43,20 +43,22 @@ def _parse_llm_json(response_text: str) -> dict:
 
 
 async def chat_completion(
-    messages: list,
-    model: str = None,
+    messages: List[dict],
+    model: Optional[str] = None,
     temperature: float = 0.3,
     max_tokens: int = 2000,
 ) -> str:
     model = model or settings.LLM_MODEL
+    if len(messages) > 50:
+        raise ValueError("Too many messages")
     try:
-        response = client.chat.completions.create(
+        response = await client.chat.completions.create(
             model=model,
-            messages=messages,
+            messages=messages,  # type: ignore[arg-type]
             temperature=temperature,
             max_tokens=max_tokens,
         )
-        return response.choices[0].message.content
+        return response.choices[0].message.content or ""
     except Exception as e:
         logger.error("llm_completion_failed", error=str(e))
         raise
@@ -66,14 +68,17 @@ async def generate_structured_analysis(
     document_text: str,
     role: str,
     negotiation_stance: str,
-    clauses: list,
+    clauses: List[dict],
 ) -> dict:
-    import json as _json
+    safe_role = sanitize_for_llm_context(role[:100])
+    safe_stance = sanitize_for_llm_context(negotiation_stance[:100])
+    if detect_prompt_injection(document_text[:2000]):
+        logger.warning("prompt_injection_in_document")
 
     prompt = f"""Analyze this legal document and provide a structured risk analysis.
 
-User Role: {role}
-Negotiation Stance: {negotiation_stance}
+User Role: {safe_role}
+Negotiation Stance: {safe_stance}
 
 Document Clauses:
 {json.dumps(clauses[:20], indent=2)}
@@ -144,11 +149,9 @@ Respond ONLY with valid JSON."""
 async def generate_comparison(
     doc_a_text: str,
     doc_b_text: str,
-    clauses_a: list,
-    clauses_b: list,
+    clauses_a: List[dict],
+    clauses_b: List[dict],
 ) -> dict:
-    import json as _json
-
     prompt = f"""Compare these two legal document versions and identify meaningful changes.
 
 VERSION A text (first 4000 chars):
@@ -198,17 +201,18 @@ Respond ONLY with valid JSON."""
 async def generate_consultation_sheet(
     document_name: str,
     role: str,
-    risk_findings: list,
-    obligations: list,
-    deadlines: list,
-    ambiguities: list,
+    risk_findings: List[dict],
+    obligations: List[dict],
+    deadlines: List[dict],
+    ambiguities: List[str],
 ) -> dict:
-    import json as _json
+    safe_name = sanitize_for_llm_context(document_name[:200])
+    safe_role = sanitize_for_llm_context(role[:100])
 
     prompt = f"""Generate a legal consultation preparation sheet for this document.
 
-Document: {document_name}
-User Role: {role}
+Document: {safe_name}
+User Role: {safe_role}
 
 Risk Findings:
 {json.dumps(risk_findings[:10], indent=2)}
@@ -247,10 +251,13 @@ Respond ONLY with valid JSON."""
 
 async def answer_question(
     question: str,
-    context_clauses: list,
+    context_clauses: List[dict],
     document_name: str,
 ) -> dict:
-    import json as _json
+    safe_question = sanitize_for_llm_context(question[:2000])
+    safe_name = sanitize_for_llm_context(document_name[:200])
+    if detect_prompt_injection(question):
+        logger.warning("prompt_injection_in_question")
 
     context_text = "\n\n".join([
         f"Section {c.get('section_number', 'N/A')} (Page {c.get('page_number', 'N/A')}):\n{c.get('content', '')}"
@@ -259,12 +266,12 @@ async def answer_question(
 
     prompt = f"""Answer the user's question about this legal document using ONLY the provided context.
 
-Document: {document_name}
+Document: {safe_name}
 
 Relevant document sections:
 {context_text}
 
-User question: {question}
+User question: {safe_question}
 
 Rules:
 1. Answer based ONLY on the provided document sections.

@@ -16,7 +16,7 @@ export function TopNav() {
   return (
     <header className="h-16 border-b border-border bg-surface-muted flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
-        <h1 className="text-lg font-semibold text-primary">LexiGuard AI</h1>
+        <p className="text-lg font-semibold text-primary">LexiGuard AI</p>
       </div>
 
       <div className="flex items-center gap-4">
@@ -24,13 +24,13 @@ export function TopNav() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
+                <User aria-hidden="true" className="h-4 w-4" />
                 <span className="text-sm">{user.email}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={signOut} className="text-risk-high">
-                <LogOut className="h-4 w-4 mr-2" />
+                <LogOut aria-hidden="true" className="h-4 w-4 mr-2" />
                 Sign Out
               </DropdownMenuItem>
             </DropdownMenuContent>

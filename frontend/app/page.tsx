@@ -30,7 +30,7 @@ export default function Home() {
       <header className="border-b border-border bg-surface">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Scale className="h-6 w-6 text-primary" />
+            <Scale aria-hidden="true" className="h-6 w-6 text-primary" />
             <span className="text-lg font-bold text-primary">LexiGuard AI</span>
           </div>
           <div className="flex items-center gap-3">
@@ -44,7 +44,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-16">
+      <main id="main-content" className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-page-title text-primary mb-4">
             Understand Your Legal Documents
@@ -63,17 +63,17 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
           <FeatureCard
-            icon={<FileText className="h-6 w-6" />}
+            icon={<FileText aria-hidden="true" className="h-6 w-6" />}
             title="Document Intelligence"
             description="Upload contracts, NDAs, leases, and more. Our AI extracts clauses, identifies risks, and explains terms in plain English."
           />
           <FeatureCard
-            icon={<Shield className="h-6 w-6" />}
+            icon={<Shield aria-hidden="true" className="h-6 w-6" />}
             title="Risk Analysis"
             description="Get a 0-100 risk score with detailed findings. Understand unlimited liability, indemnification, auto-renewal, and other critical clauses."
           />
           <FeatureCard
-            icon={<MessageSquare className="h-6 w-6" />}
+            icon={<MessageSquare aria-hidden="true" className="h-6 w-6" />}
             title="Document Q&A"
             description="Ask questions about your documents and get grounded answers with source citations. Never fabricate information."
           />
@@ -105,7 +105,7 @@ function FeatureCard({
       <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/15 text-primary mb-4">
         {icon}
       </div>
-      <h3 className="text-card-title font-semibold text-primary mb-2">{title}</h3>
+      <h2 className="text-card-title font-semibold text-primary mb-2">{title}</h2>
       <p className="text-sm text-text-secondary">{description}</p>
     </div>
   );

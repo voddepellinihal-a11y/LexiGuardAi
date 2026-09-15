@@ -34,10 +34,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
+    <main id="main-content" className="min-h-screen bg-background flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <Scale className="h-8 w-8 text-primary" />
+          <Scale aria-hidden="true" className="h-8 w-8 text-primary" />
           <span className="text-2xl font-bold text-primary">LexiGuard AI</span>
         </div>
 
@@ -83,7 +83,7 @@ export default function LoginPage() {
 
             <Button type="submit" className="btn-primary w-full" disabled={loading}>
               {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin mr-2" />
               ) : null}
               Sign In
             </Button>
@@ -97,6 +97,6 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

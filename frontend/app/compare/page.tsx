@@ -9,6 +9,7 @@ import { TopNav } from "@/components/TopNav";
 import { ComparisonView } from "@/components/ComparisonView";
 import { FileText, Loader2, GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import type { Comparison, ComparisonChange } from "@/types";
 
 export default function ComparePage() {
   const { user, loading } = useAuth();
@@ -18,7 +19,8 @@ export default function ComparePage() {
 
   const [docA, setDocA] = useState("");
   const [docB, setDocB] = useState("");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<{ changes: ComparisonChange[] } | null>(null);
+  const [compareError, setCompareError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -38,6 +40,7 @@ export default function ComparePage() {
 
   const handleCompare = async () => {
     if (!docA || !docB) return;
+    setCompareError(null);
     try {
       const res = await compareMutation.mutateAsync({
         documentAId: docA,
@@ -45,7 +48,7 @@ export default function ComparePage() {
       });
       setResult(res);
     } catch (error) {
-      console.error("Comparison failed:", error);
+      setCompareError(error instanceof Error ? error.message : "Comparison failed. Please try again.");
     }
   };
 
@@ -107,23 +110,28 @@ export default function ComparePage() {
                 disabled={!docA || !docB || compareMutation.isPending || docA === docB}
               >
                 {compareMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin mr-2" />
                 ) : (
-                  <GitCompare className="h-4 w-4 mr-2" />
+                  <GitCompare aria-hidden="true" className="h-4 w-4 mr-2" />
                 )}
                 Compare Documents
               </Button>
 
               {docA === docB && docA && (
-                <p className="text-xs text-risk-medium mt-2">
+                <p role="alert" className="text-xs text-risk-medium mt-2">
                   Please select two different documents to compare.
+                </p>
+              )}
+              {compareError && (
+                <p role="alert" className="text-xs text-risk-high mt-2">
+                  {compareError}
                 </p>
               )}
             </div>
 
             {readyDocs.length < 2 && (
               <div className="card text-center py-8">
-                <FileText className="h-12 w-12 text-text-muted mx-auto mb-4" />
+                <FileText aria-hidden="true" className="h-12 w-12 text-text-muted mx-auto mb-4" />
                 <h3 className="text-card-title font-semibold text-primary mb-2">
                   Need at least 2 processed documents
                 </h3>
@@ -134,8 +142,8 @@ export default function ComparePage() {
             )}
 
             {compareMutation.isPending && (
-              <div className="card text-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-accent mx-auto mb-3" />
+              <div className="card text-center py-12" role="status" aria-live="polite">
+                <Loader2 aria-hidden="true" className="h-8 w-8 animate-spin text-accent mx-auto mb-3" />
                 <p className="text-text-secondary">Comparing documents...</p>
                 <p className="text-xs text-text-muted mt-1">
                   Performing semantic alignment and change detection
@@ -144,7 +152,7 @@ export default function ComparePage() {
             )}
 
             {result && result.changes && result.changes.length > 0 && (
-              <div>
+              <div aria-live="polite">
                 <h2 className="text-section-title font-semibold text-primary mb-4">
                   Changes Detected
                 </h2>
@@ -153,8 +161,8 @@ export default function ComparePage() {
             )}
 
             {result && result.changes && result.changes.length === 0 && (
-              <div className="card text-center py-12">
-                <GitCompare className="h-12 w-12 text-text-muted mx-auto mb-4" />
+              <div className="card text-center py-12" aria-live="polite">
+                <GitCompare aria-hidden="true" className="h-12 w-12 text-text-muted mx-auto mb-4" />
                 <h3 className="text-card-title font-semibold text-primary mb-2">
                   No significant changes
                 </h3>

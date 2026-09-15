@@ -1,10 +1,14 @@
+import os
+import re
+import uuid
+from datetime import datetime, timezone
 from supabase import Client
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from app.repositories.repositories import (
     DocumentRepository, DocumentSectionRepository, ClauseRepository,
     AnalysisRepository, RiskFindingRepository, ObligationRepository,
     ComparisonRepository, ComparisonChangeRepository, ChatRepository,
-    CitationRepository, ConsultationSheetRepository,
+    ConsultationSheetRepository,
 )
 from app.services.document_parser import DocumentParser
 from app.services.embedding_service import generate_embeddings, generate_single_embedding
@@ -18,6 +22,12 @@ import structlog
 logger = structlog.get_logger()
 
 
+def sanitize_filename(filename: str) -> str:
+    name = os.path.basename(filename)
+    name = re.sub(r"[^a-zA-Z0-9._-]", "_", name)[:200]
+    return name or "document"
+
+
 class DocumentService:
     def __init__(self, supabase: Client):
         self.supabase = supabase
@@ -26,11 +36,11 @@ class DocumentService:
         self.clause_repo = ClauseRepository(supabase)
         self.parser = DocumentParser(supabase)
 
-    async def upload_document(self, user_id: str, file_content: bytes, filename: str) -> dict:
-        import uuid
+    async def upload_document(self, user_id: str, file_content: bytes, filename: str) -> Dict[str, Any]:
         doc_id = str(uuid.uuid4())
+        safe_name = sanitize_filename(filename)
 
-        storage_path = f"{user_id}/{doc_id}/{filename}"
+        storage_path = f"{user_id}/{doc_id}/{safe_name}"
         self.supabase.storage.from_(settings.STORAGE_BUCKET).upload(
             path=storage_path,
             file=file_content,
@@ -40,7 +50,7 @@ class DocumentService:
         doc_record = await self.doc_repo.create({
             "id": doc_id,
             "user_id": user_id,
-            "filename": filename,
+            "filename": safe_name,
             "storage_path": storage_path,
             "file_size": len(file_content),
             "status": "uploaded",
@@ -48,8 +58,8 @@ class DocumentService:
 
         return doc_record
 
-    async def process_document(self, document_id: str) -> dict:
-        doc = await self.doc_repo.get_by_id(document_id, None)
+    async def process_document(self, document_id: str, user_id: Optional[str] = None) -> Dict[str, Any]:
+        doc = await self.doc_repo.get_by_id(document_id, user_id)
         if not doc:
             raise ValueError("Document not found")
 
@@ -167,7 +177,7 @@ class AnalysisService:
             await self.analysis_repo.update(analysis["id"], {
                 "overall_score": risk_score.get("overall_score", 50),
                 "status": "completed",
-                "completed_at": "now()",
+                "completed_at": datetime.now(timezone.utc).isoformat(),
             })
 
             risk_findings = []
@@ -215,13 +225,22 @@ class AnalysisService:
             await self.analysis_repo.update(analysis["id"], {"status": "failed"})
             raise
 
-    async def get_risks(self, document_id: str) -> List[dict]:
+    async def _assert_owner(self, document_id: str, user_id: Optional[str]) -> None:
+        if user_id:
+            doc = await self.doc_repo.get_by_id(document_id, user_id)
+            if not doc:
+                raise ValueError("Document not found")
+
+    async def get_risks(self, document_id: str, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        await self._assert_owner(document_id, user_id)
         return await self.risk_repo.get_by_document(document_id)
 
-    async def get_obligations(self, document_id: str) -> List[dict]:
+    async def get_obligations(self, document_id: str, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        await self._assert_owner(document_id, user_id)
         return await self.obligation_repo.get_by_document(document_id)
 
-    async def get_deadlines(self, document_id: str) -> List[dict]:
+    async def get_deadlines(self, document_id: str, user_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        await self._assert_owner(document_id, user_id)
         obligations = await self.obligation_repo.get_by_document(document_id)
         deadlines = []
         for obl in obligations:

@@ -1,6 +1,9 @@
+import os
+from uuid import UUID
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, status
 from app.core.auth import get_current_user
 from app.core.database import get_supabase_client
+from app.core.config import settings
 from app.services.main_service import DocumentService
 from app.schemas.responses import DocumentUploadResponse, DocumentResponse
 from typing import List
@@ -17,14 +20,14 @@ async def upload_document(
         raise HTTPException(status_code=400, detail="No filename provided")
 
     allowed = {".pdf", ".docx", ".txt", ".png", ".jpg", ".jpeg", ".tiff", ".bmp"}
-    import os
-    ext = os.path.splitext(file.filename)[1].lower()
+    ext = os.path.splitext(os.path.basename(file.filename))[1].lower()
     if ext not in allowed:
-        raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
+        raise HTTPException(status_code=400, detail="Unsupported file type")
 
     content = await file.read()
-    if len(content) > 50 * 1024 * 1024:
-        raise HTTPException(status_code=400, detail="File too large (max 50MB)")
+    max_bytes = settings.MAX_FILE_SIZE_MB * 1024 * 1024
+    if len(content) > max_bytes:
+        raise HTTPException(status_code=400, detail="File too large")
 
     supabase = get_supabase_client()
     service = DocumentService(supabase)
@@ -40,17 +43,17 @@ async def upload_document(
 
 @router.post("/{document_id}/process")
 async def process_document(
-    document_id: str,
+    document_id: UUID,
     user: dict = Depends(get_current_user),
 ):
     supabase = get_supabase_client()
     service = DocumentService(supabase)
     try:
-        result = await service.process_document(document_id)
+        result = await service.process_document(str(document_id), user["user_id"])
         return result
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Document processing failed")
 
 
@@ -64,23 +67,23 @@ async def list_documents(user: dict = Depends(get_current_user)):
 
 @router.get("/{document_id}", response_model=DocumentResponse)
 async def get_document(
-    document_id: str,
+    document_id: UUID,
     user: dict = Depends(get_current_user),
 ):
     supabase = get_supabase_client()
     service = DocumentService(supabase)
-    doc = await service.get_document(document_id, user["user_id"])
+    doc = await service.get_document(str(document_id), user["user_id"])
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
-    return doc
+    return {k: v for k, v in doc.items() if k != "processing_error" or True}
 
 
 @router.delete("/{document_id}")
 async def delete_document(
-    document_id: str,
+    document_id: UUID,
     user: dict = Depends(get_current_user),
 ):
     supabase = get_supabase_client()
     service = DocumentService(supabase)
-    await service.delete_document(document_id, user["user_id"])
+    await service.delete_document(str(document_id), user["user_id"])
     return {"message": "Document deleted"}

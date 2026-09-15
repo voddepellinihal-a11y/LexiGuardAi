@@ -18,7 +18,7 @@ module.exports = {
           foreground: "#0B0F14",
         },
         secondary: {
-          DEFAULT: "#727D8B",
+          DEFAULT: "#8B96A5",
           foreground: "#F4F1F7",
         },
         background: "#0B0F14",
@@ -28,7 +28,7 @@ module.exports = {
         border: "#263241",
         "text-primary": "#F4F1F7",
         "text-secondary": "#A8B1BD",
-        "text-muted": "#727D8B",
+        "text-muted": "#8B96A5",
         risk: {
           critical: "#F04438",
           high: "#F79009",
