@@ -1,0 +1,50 @@
+SAAS SUBSCRIPTION AGREEMENT
+
+This SaaS Subscription Agreement ("Agreement") is entered into as of February 15, 2025 ("Effective Date") by and between CloudMetrics Inc. ("Provider") and Apex Financial Group ("Customer").
+
+1. SERVICE DESCRIPTION
+1.1 Provider shall make available its cloud-based analytics platform ("Service") via the internet.
+1.2 Service includes: real-time dashboards, data ingestion, report generation, and API access.
+1.3 Provider shall use commercially reasonable efforts to maintain 99.5% uptime.
+
+2. SUBSCRIPTION TERM
+2.1 Initial term: twelve (12) months from Effective Date.
+2.2 This Agreement auto-renews for successive twelve (12) month periods unless Customer provides notice of non-renewal at least thirty (30) days prior to end of current term.
+2.3 Early termination by Customer requires payment of all remaining fees for the current term.
+
+3. FEES AND PAYMENT
+3.1 Annual subscription fee: $48,000, payable in monthly installments of $4,000.
+3.2 Payment due within fifteen (15) days of invoice.
+3.3 Late payments accrue interest at 2.5% per month.
+3.4 Fees are non-refundable. No credits for partial months.
+3.5 Provider may increase fees by up to 10% upon renewal with 60 days notice.
+
+4. DATA AND PRIVACY
+4.1 Customer retains all rights to its data.
+4.2 Provider may access Customer data solely to provide the Service.
+4.3 Provider shall not sell or share Customer data with third parties.
+4.4 Provider shall implement industry-standard security measures.
+4.5 Upon termination, Provider shall make data available for export for thirty (30) days, then delete all data.
+
+5. INDEMNIFICATION
+5.1 Customer shall indemnify Provider against all claims arising from Customer's use of the Service.
+5.2 Provider shall indemnify Customer against third-party IP infringement claims.
+
+6. LIMITATION OF LIABILITY
+6.1 NEITHER PARTY SHALL BE LIABLE FOR INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL, OR PUNITIVE DAMAGES.
+6.2 Provider's total liability shall not exceed the fees paid by Customer in the twelve (12) months preceding the claim.
+6.3 Provider is not liable for data loss, service interruptions, or security breaches beyond its reasonable control.
+
+7. INTELLECTUAL PROPERTY
+7.1 Provider retains all rights in the Service and platform.
+7.2 Customer grants Provider a limited license to use Customer data for Service improvement.
+7.3 Customer shall not reverse-engineer, decompile, or copy the Service.
+
+8. SERVICE LEVELS
+8.1 Provider shall respond to critical issues within four (4) hours.
+8.2 Provider shall respond to non-critical issues within one (1) business day.
+8.3 Service credits available only if uptime falls below 99.0% in a calendar month.
+
+9. GOVERNING LAW
+9.1 This Agreement shall be governed by the laws of the State of New York.
+9.2 Disputes shall be resolved through arbitration in New York City.

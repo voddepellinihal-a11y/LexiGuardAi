@@ -1,0 +1,48 @@
+EMPLOYMENT AGREEMENT
+
+This Employment Agreement ("Agreement") is entered into as of April 1, 2025 ("Effective Date") by and between NexGen Labs Inc. ("Employer") and Sarah Chen ("Employee").
+
+1. POSITION AND DUTIES
+1.1 Employee is hired as Senior Software Engineer, reporting to the VP of Engineering.
+1.2 Employee shall devote full working time and best efforts to the performance of duties.
+1.3 Employee shall not engage in any other employment or business activity without prior written consent.
+
+2. COMPENSATION
+2.1 Base salary: $145,000 per year, payable bi-weekly.
+2.2 Signing bonus: $15,000, payable within 30 days of start date.
+2.3 Annual performance bonus up to 20% of base salary, at Employer's sole discretion.
+2.4 Stock options: 10,000 shares vesting over 4 years with 1-year cliff.
+
+3. BENEFITS
+3.1 Employer shall provide health, dental, and vision insurance.
+3.2 Four (4) weeks paid time off per year.
+3.3 401(k) match up to 4% of salary.
+
+4. TERM AND TERMINATION
+4.1 This is an at-will employment agreement. Either party may terminate at any time with two (2) weeks written notice.
+4.2 Employer may terminate immediately for cause, including but not limited to: misconduct, breach of policy, dishonesty, or poor performance as determined solely by Employer.
+4.3 Upon termination without cause, Employee shall receive severance equal to two (2) weeks base pay per year of service, contingent on signing a release.
+
+5. INTELLECTUAL PROPERTY
+5.1 Employee agrees that all inventions, discoveries, code, designs, and intellectual property created during employment ("Work Product") shall be the sole and exclusive property of Employer.
+5.2 Employee assigns all rights in Work Product to Employer, including moral rights.
+5.3 Employee shall not use any employer resources for personal projects.
+5.4 Employee shall not retain copies of any Work Product after termination.
+
+6. NON-COMPETE
+6.1 For a period of eighteen (18) months following termination, Employee shall not: (a) work for any direct competitor of Employer; (b) solicit any employee or customer of Employer; (c) disclose any trade secrets.
+6.2 "Direct competitor" includes any company offering AI-powered analytics platforms, as determined by Employer in its sole discretion.
+6.3 Non-compete applies worldwide.
+
+7. CONFIDENTIALITY
+7.1 Employee shall maintain strict confidentiality of all proprietary information.
+7.2 Confidentiality obligations survive termination indefinitely.
+7.3 Employee acknowledges that breach may cause irreparable harm.
+
+8. DISPUTE RESOLUTION
+8.1 All disputes shall be resolved through mandatory binding arbitration.
+8.2 Arbitration shall take place in the state selected by Employer.
+8.3 Employer shall be entitled to recover attorneys fees.
+
+9. GOVERNING LAW
+9.1 This Agreement shall be governed by the laws of the State of Delaware.

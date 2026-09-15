@@ -1,0 +1,11 @@
+Your selected colors:
+
+    Text: #f0dfeb - rgb(240, 223, 235) - hsl(318, 36%, 91%)
+    Background: #070306 - rgb(7, 3, 6) - hsl(315, 40%, 2%)
+    Primary: #d39ec2 - rgb(211, 158, 194) - hsl(319, 38%, 72%)
+    Secondary: #763f36 - rgb(118, 63, 54) - hsl(8, 37%, 34%)
+    Accent: #af7751 - rgb(175, 119, 81) - hsl(24, 37%, 50%)
+
+Realtime Colors link for selected colors: https://www.realtimecolors.com/?colors=f0dfeb-070306-d39ec2-763f36-af7751&fonts=Inter-Inter
+
+Thanks for using RealtimeColors.com!

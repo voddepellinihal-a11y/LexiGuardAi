@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-text-primary font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary px-4 py-2 rounded-md font-medium text-sm hover:bg-primary-hover transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+    color: #0B0F14;
+  }
+  .btn-secondary {
+    @apply bg-surface border border-border text-text-primary px-4 py-2 rounded-md font-medium text-sm hover:bg-surface-muted transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background;
+  }
+  .btn-accent {
+    @apply bg-accent px-4 py-2 rounded-md font-medium text-sm hover:opacity-90 transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background;
+    color: #0B0F14;
+  }
+  .card {
+    @apply bg-surface border border-border rounded-lg p-6;
+  }
+  .input-field {
+    @apply w-full px-3 py-2 border border-border rounded-md text-sm bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent placeholder:text-text-muted;
+  }
+  .label {
+    @apply text-sm font-medium text-text-secondary;
+  }
+  .legal-text {
+    @apply font-serif text-body text-text-primary leading-relaxed;
+  }
+}
